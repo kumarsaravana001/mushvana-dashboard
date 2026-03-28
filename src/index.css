@@ -148,6 +148,15 @@ body {
   background: rgba(239,68,68,0.1); padding: 1px 6px; border-radius: 4px;
   letter-spacing: 0.3px; flex-shrink: 0; align-self: center;
 }
+.ticket-row__inline-status {
+  padding: 3px 8px; border-radius: 6px; border: 1px solid transparent;
+  background: transparent; font-size: 12px; font-weight: 500;
+  font-family: inherit; cursor: pointer; flex-shrink: 0; align-self: center;
+  -webkit-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239b9a97' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 6px center; padding-right: 20px;
+}
+.ticket-row__inline-status:hover { background: var(--bg-hover); border-color: var(--border-input); }
 
 /* ── Ticket Expanded Detail ── */
 .ticket-row__details {
@@ -181,6 +190,14 @@ body {
   background: var(--pill-active); color: var(--text-primary);
   font-weight: 500; border-color: transparent;
 }
+.filter-pill__dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  display: inline-block; margin-right: 4px; vertical-align: middle;
+}
+.section-header__count {
+  font-weight: 400; color: var(--text-tertiary);
+  margin-left: 4px;
+}
 
 /* ── Energy Guide ── */
 .energy-guide { background: var(--bg-surface); border-radius: 8px; padding: 14px; margin-bottom: 12px; }
@@ -202,19 +219,32 @@ body {
   font-weight: 500; border-color: transparent;
 }
 
-/* ── Suggestion Banner ── */
-.suggestion-banner {
-  background: rgba(34,197,94,0.06); border-left: 3px solid #22c55e;
-  border-radius: 6px; padding: 12px 16px; margin-bottom: 16px;
+/* ── Toast Notifications ── */
+.toast-container {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  z-index: 200; display: flex; flex-direction: column-reverse; gap: 8px;
+  width: calc(100% - 32px); max-width: 400px; pointer-events: none;
 }
-.suggestion-banner__text { font-size: 13px; color: var(--text-primary); margin-bottom: 8px; line-height: 1.5; }
-.suggestion-banner__actions { display: flex; gap: 8px; }
-.suggestion-banner__btn {
-  padding: 6px 14px; border-radius: 6px; border: none; font-size: 12px;
+.toast {
+  background: var(--bg-card); border: 1px solid var(--border-sep);
+  border-left: 3px solid #22c55e; border-radius: 8px;
+  padding: 12px 14px; pointer-events: auto;
+  animation: toastIn 0.25s ease-out;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+[data-theme="dark"] .toast { box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+@keyframes toastIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.toast__text { font-size: 13px; color: var(--text-primary); line-height: 1.4; margin-bottom: 8px; }
+.toast__text strong { font-weight: 600; }
+.toast__actions { display: flex; gap: 8px; }
+.toast__btn {
+  padding: 4px 12px; border-radius: 6px; border: none; font-size: 12px;
   font-weight: 500; font-family: inherit; cursor: pointer;
 }
-.suggestion-banner__btn--accept { background: #22c55e; color: #fff; }
-.suggestion-banner__btn--dismiss { background: transparent; border: 1px solid var(--border-input); color: var(--text-secondary); }
+.toast__btn--accept { background: #22c55e; color: #fff; }
+.toast__btn--accept:hover { background: #16a34a; }
+.toast__btn--dismiss { background: transparent; border: 1px solid var(--border-input); color: var(--text-secondary); }
+.toast__btn--dismiss:hover { background: var(--bg-hover); }
 
 /* ── Modal ── */
 .modal-overlay {

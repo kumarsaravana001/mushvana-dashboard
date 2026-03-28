@@ -131,11 +131,21 @@ export function TicketProvider({ children }) {
 
   const dismissSuggestions = useCallback(() => setSuggestions([]), []);
 
+  const dismissSuggestion = useCallback((id) => {
+    setSuggestions((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  const acceptSuggestion = useCallback((id) => {
+    updateStatus(id, "Actionable");
+    setSuggestions((prev) => prev.filter((t) => t.id !== id));
+  }, [updateStatus]);
+
   const value = useMemo(() => ({
     tickets, loaded, suggestions,
     updateStatus, addTicket, updateTicket, deleteTicket,
     bulkUpdateStatus, setAllTickets, dismissSuggestions,
-  }), [tickets, loaded, suggestions, updateStatus, addTicket, updateTicket, deleteTicket, bulkUpdateStatus, setAllTickets, dismissSuggestions]);
+    dismissSuggestion, acceptSuggestion,
+  }), [tickets, loaded, suggestions, updateStatus, addTicket, updateTicket, deleteTicket, bulkUpdateStatus, setAllTickets, dismissSuggestions, dismissSuggestion, acceptSuggestion]);
 
   return <TicketContext.Provider value={value}>{children}</TicketContext.Provider>;
 }

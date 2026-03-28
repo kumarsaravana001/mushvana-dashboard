@@ -11,7 +11,8 @@
       "Bash(gh api repos/kumarsaravana001/mushvana-dashboard/pages -X POST --input - 2)",
       "Bash(1:*)",
       "Bash(gh run list --repo kumarsaravana001/mushvana-dashboard --limit 3)",
-      "Bash(gh run watch 23683775721 --repo kumarsaravana001/mushvana-dashboard)"
+      "Bash(gh run watch 23683775721 --repo kumarsaravana001/mushvana-dashboard)",
+      "Bash(gh run list --limit 3)"
     ]
   }
 }

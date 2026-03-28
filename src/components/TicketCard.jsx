@@ -28,30 +28,26 @@ export default function TicketCard({ ticket }) {
             >
               {projConfig.icon} {ticket.project}
             </span>
-            <span className="ticket-row__energy">
-              {"\u{1F9E0}" === projConfig.icon ? "" : ""}{ticket.energy}
-            </span>
+            <span className="ticket-row__energy">{ticket.energy}</span>
             {ticket.note && (
               <span className="ticket-row__note">{"\u2014"} {ticket.note}</span>
             )}
           </div>
         </div>
+        <select
+          className="ticket-row__inline-status"
+          value={ticket.status}
+          onChange={(e) => { e.stopPropagation(); updateStatus(ticket.id, e.target.value); }}
+          onClick={(e) => e.stopPropagation()}
+          style={{ color: statusColor }}
+        >
+          {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+        </select>
         {ticket.priority === "High" && <span className="ticket-row__high">HIGH</span>}
       </div>
 
       {expanded && (
         <div className="ticket-row__details">
-          <div className="ticket-row__detail-row">
-            <span className="ticket-row__detail-label">Status</span>
-            <select
-              className="ticket-row__status-select"
-              value={ticket.status}
-              onChange={(e) => updateStatus(ticket.id, e.target.value)}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
-          </div>
           {depNames.length > 0 && (
             <div className="ticket-row__depends">
               Depends on: {depNames.join(", ")}
