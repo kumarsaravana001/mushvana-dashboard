@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx vite build)",
+      "Bash(brew install gh)",
+      "Bash(gh auth status)",
+      "Bash(gh auth login -p https -w)"
+    ]
+  }
+}
