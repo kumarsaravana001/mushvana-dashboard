@@ -6,11 +6,11 @@ const DEPENDS_MAP = {
   17: ["t-13","t-14","t-15","t-16"],
   19: ["t-17"], 20: ["t-19"], 21: ["t-20"], 22: ["t-21"], 23: ["t-22"],
   24: ["t-18"], 26: ["t-23"],
-  31: ["t-27","t-28","t-30"],
-  34: ["t-32"],
-  37: ["t-36"], 38: ["t-36"], 39: ["t-36"],
-  43: ["t-42"], 44: ["t-43"], 45: ["t-36"],
-  46: ["t-44","t-45"],
+  33: ["t-29","t-30","t-32"],
+  36: ["t-34"],
+  39: ["t-38"], 40: ["t-38"], 41: ["t-38"],
+  45: ["t-44"], 46: ["t-45"], 47: ["t-38"],
+  48: ["t-46","t-47"],
 };
 
 export function needsMigration(tickets) {
@@ -23,7 +23,7 @@ export function migrateTickets(oldTickets) {
   const now = new Date().toISOString();
   return oldTickets.map((t) => ({
     id: `t-${t.id}`,
-    project: t.project,
+    project: t.project === "Background" ? "Mushroom Cosmetics" : t.project,
     task: t.task,
     status: t.status,
     energy: t.energy,

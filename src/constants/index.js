@@ -3,7 +3,7 @@ export const PROJECTS = {
   "Mushroom Cultivation": { color: "#16a34a", icon: "\u{1F344}", priority: "Keep Alive" },
   "Spawn Lab": { color: "#9333ea", icon: "\u{1F9EB}", priority: "4-Day Burst" },
   "Functional Mushroom": { color: "#dc2626", icon: "\u{1F48A}", priority: "Setup April" },
-  Background: { color: "#6b7280", icon: "\u26A1", priority: "Running" },
+  "Mushroom Cosmetics": { color: "#f59e0b", icon: "\u{1F9F4}", priority: "Waiting on Chemist" },
 };
 
 export const STATUS_CONFIG = {
