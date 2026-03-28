@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PROJECTS, STATUS_CONFIG, ENERGY_ICONS, STATUSES } from "../constants";
+import { PROJECTS, STATUS_COLORS, ENERGY_ICONS, STATUSES } from "../constants";
 import { useTickets } from "../context/TicketContext";
 import { useTicketFilters } from "../hooks/useTicketFilters";
 import FilterBar from "../components/FilterBar";
@@ -47,7 +47,7 @@ export default function ManageView() {
         <input
           className="search-input"
           type="text"
-          placeholder="Search tickets..."
+          placeholder="Search..."
           value={filters.searchTerm}
           onChange={(e) => filters.setSearchTerm(e.target.value)}
         />
@@ -74,9 +74,9 @@ export default function ManageView() {
 
       {filters.filtered.map((t) => {
         const projConfig = PROJECTS[t.project];
-        const statusStyle = STATUS_CONFIG[t.status];
+        const statusColor = STATUS_COLORS[t.status];
         return (
-          <div key={t.id} className="manage-row" style={{ borderLeftColor: projConfig.color }}>
+          <div key={t.id} className="manage-row">
             {selectMode && (
               <input
                 type="checkbox"
@@ -85,20 +85,23 @@ export default function ManageView() {
                 onChange={() => toggleSelect(t.id)}
               />
             )}
+            <div className="manage-row__dot" style={{ background: statusColor }} />
             <div className="manage-row__body">
-              <div className="manage-row__meta">
-                <span style={{ color: projConfig.color }}>{projConfig.icon}</span>
-                <span className="manage-row__task">{t.task}</span>
-              </div>
+              <div className="manage-row__task">{t.task}</div>
               <div className="manage-row__badges">
-                <span className="manage-row__status" style={{ background: statusStyle.bg, color: statusStyle.text }}>{t.status}</span>
-                <span className="manage-row__energy">{ENERGY_ICONS[t.energy]}</span>
-                {t.priority === "High" && <span className="ticket__high">HIGH</span>}
+                <span
+                  className="manage-row__project-pill"
+                  style={{ background: projConfig.color + "18", color: projConfig.color }}
+                >
+                  {projConfig.icon} {t.project.split(" ")[0]}
+                </span>
+                <span className="manage-row__energy">{ENERGY_ICONS[t.energy]} {t.energy}</span>
+                {t.priority === "High" && <span className="ticket-row__high">HIGH</span>}
               </div>
             </div>
             <div className="manage-row__actions">
-              <button className="manage-row__btn" onClick={() => handleEdit(t)} title="Edit">{"✎"}</button>
-              <button className="manage-row__btn manage-row__btn--del" onClick={() => handleDelete(t)} title="Delete">{"✕"}</button>
+              <button className="manage-row__btn" onClick={() => handleEdit(t)} title="Edit">{"\u270E"}</button>
+              <button className="manage-row__btn manage-row__btn--del" onClick={() => handleDelete(t)} title="Delete">{"\u2715"}</button>
             </div>
           </div>
         );

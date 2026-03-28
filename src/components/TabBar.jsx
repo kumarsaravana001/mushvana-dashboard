@@ -15,7 +15,7 @@ export default function TabBar({ active, onChange, actionableCount }) {
           className={`tab-bar__btn ${active === tab.key ? "tab-bar__btn--active" : ""}`}
           onClick={() => onChange(tab.key)}
         >
-          {tab.key === "actionable" ? `\u26A1 ${tab.label} (${actionableCount})` : tab.label}
+          {tab.key === "actionable" ? `${tab.label} (${actionableCount})` : tab.label}
         </button>
       ))}
     </nav>

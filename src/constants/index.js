@@ -7,17 +7,17 @@ export const PROJECTS = {
 };
 
 export const STATUS_CONFIG = {
-  Actionable: { bg: "#dcfce7", text: "#166534" },
-  Waiting: { bg: "#fef9c3", text: "#854d0e" },
-  Blocked: { bg: "#fce4ec", text: "#991b1b" },
-  Done: { bg: "#f3f4f6", text: "#6b7280" },
+  Actionable: { bg: "rgba(34,197,94,0.12)", text: "#22c55e" },
+  Waiting: { bg: "rgba(234,179,8,0.12)", text: "#eab308" },
+  Blocked: { bg: "rgba(239,68,68,0.12)", text: "#ef4444" },
+  Done: { bg: "rgba(155,154,151,0.12)", text: "#9b9a97" },
 };
 
 export const STATUS_COLORS = {
   Actionable: "#22c55e",
   Waiting: "#eab308",
   Blocked: "#ef4444",
-  Done: "#6b7280",
+  Done: "#9b9a97",
 };
 
 export const ENERGY_ICONS = {

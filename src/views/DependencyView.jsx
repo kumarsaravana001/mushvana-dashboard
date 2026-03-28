@@ -68,7 +68,6 @@ export default function DependencyView() {
             key={name}
             className={`dep-tabs__btn ${activeProject === name ? "dep-tabs__btn--active" : ""}`}
             onClick={() => { setActiveProject(name); setHighlighted(new Set()); }}
-            style={activeProject === name ? { borderColor: PROJECTS[name].color } : {}}
           >
             {PROJECTS[name].icon} {name.split(" ")[0]}
           </button>
@@ -82,10 +81,10 @@ export default function DependencyView() {
           <svg className="dep-graph" width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`}>
             <defs>
               <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569" />
+                <path d="M 0 0 L 10 5 L 0 10 z" className="dep-arrow" />
               </marker>
               <marker id="arrow-hl" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6" />
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb" />
               </marker>
             </defs>
 
@@ -115,11 +114,16 @@ export default function DependencyView() {
                   <rect
                     x={pos.x} y={pos.y} width={NODE_W} height={NODE_H} rx={6}
                     className={`dep-node ${isHl ? "dep-node--highlighted" : ""}`}
-                    fill="#1e293b" stroke={color} strokeWidth={isHl ? 2.5 : 1.5}
+                    style={{ fill: "var(--bg-card)", stroke: color, strokeWidth: isHl ? 2.5 : 1.5 }}
+                  />
+                  <line
+                    x1={pos.x} y1={pos.y} x2={pos.x} y2={pos.y + NODE_H}
+                    style={{ stroke: color, strokeWidth: 3 }}
                   />
                   <text x={pos.x + NODE_W / 2} y={pos.y + NODE_H / 2 + 1}
                     textAnchor="middle" dominantBaseline="middle"
-                    fill={isHl ? "#fff" : "#cbd5e1"} fontSize={11} fontFamily="Outfit, system-ui"
+                    style={{ fill: "var(--text-primary)" }}
+                    fontSize={12} fontFamily="Inter, system-ui"
                   >
                     {label}
                   </text>
@@ -137,7 +141,7 @@ export default function DependencyView() {
             {status}
           </span>
         ))}
-        <span className="dep-legend__hint">Tap a blocked ticket to highlight its dependency chain</span>
+        <span className="dep-legend__hint">Tap a blocked ticket to highlight its chain</span>
       </div>
     </div>
   );

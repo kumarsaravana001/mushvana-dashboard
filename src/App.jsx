@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { TicketProvider, useTickets } from "./context/TicketContext";
+import { useTheme } from "./hooks/useTheme";
 import Header from "./components/Header";
 import TabBar from "./components/TabBar";
 import SuggestionBanner from "./components/SuggestionBanner";
@@ -13,6 +14,7 @@ function Dashboard() {
   const [view, setView] = useState("overview");
   const [initialProject, setInitialProject] = useState("All");
   const { tickets, loaded } = useTickets();
+  const { theme, toggle } = useTheme();
 
   const actionableCount = useMemo(
     () => tickets.filter((t) => t.status === "Actionable").length,
@@ -29,7 +31,7 @@ function Dashboard() {
   return (
     <div className="app">
       <div className="container">
-        <Header />
+        <Header theme={theme} onToggleTheme={toggle} />
         <TabBar active={view} onChange={setView} actionableCount={actionableCount} />
         <SuggestionBanner />
 

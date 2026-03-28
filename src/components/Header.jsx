@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { useTickets } from "../context/TicketContext";
 import { exportTickets, importTickets } from "../utils/dataIO";
 
-export default function Header() {
+export default function Header({ theme, onToggleTheme }) {
   const { tickets, setAllTickets } = useTickets();
   const fileRef = useRef(null);
 
@@ -31,14 +31,17 @@ export default function Header() {
       <div className="header__top">
         <div>
           <h1 className="header__title">MUSHVANA</h1>
-          <p className="header__date">Open Tickets Dashboard — {today}</p>
+          <p className="header__date">{today}</p>
         </div>
         <div className="header__actions">
           <button className="header__btn" onClick={() => exportTickets(tickets)} title="Export">
-            {"↓"}
+            {"\u2193"}
           </button>
           <button className="header__btn" onClick={() => fileRef.current?.click()} title="Import">
-            {"↑"}
+            {"\u2191"}
+          </button>
+          <button className="header__btn" onClick={onToggleTheme} title={theme === "light" ? "Dark mode" : "Light mode"}>
+            {theme === "light" ? "\u263E" : "\u2600"}
           </button>
           <input ref={fileRef} type="file" accept=".json" onChange={handleImport} hidden />
         </div>

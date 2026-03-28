@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { PROJECTS, STATUS_CONFIG, ENERGY_ICONS, STATUSES } from "../constants";
+import { PROJECTS, STATUS_COLORS, STATUSES } from "../constants";
 import { useTickets } from "../context/TicketContext";
 
 export default function TicketCard({ ticket }) {
   const [expanded, setExpanded] = useState(false);
   const { tickets, updateStatus } = useTickets();
   const projConfig = PROJECTS[ticket.project];
-  const statusStyle = STATUS_CONFIG[ticket.status];
+  const statusColor = STATUS_COLORS[ticket.status];
 
   const depNames = (ticket.depends_on || [])
     .map((id) => {
@@ -16,60 +16,61 @@ export default function TicketCard({ ticket }) {
     .filter(Boolean);
 
   return (
-    <div
-      className="ticket"
-      style={{ borderLeftColor: projConfig.color }}
-      onClick={() => setExpanded(!expanded)}
-    >
-      <div className="ticket__row">
-        <div className="ticket__body">
-          <div className="ticket__meta">
-            <span className="ticket__project" style={{ color: projConfig.color }}>
+    <>
+      <div className="ticket-row" onClick={() => setExpanded(!expanded)}>
+        <div className="ticket-row__dot" style={{ background: statusColor }} />
+        <div className="ticket-row__content">
+          <div className="ticket-row__title">{ticket.task}</div>
+          <div className="ticket-row__meta">
+            <span
+              className="ticket-row__project-pill"
+              style={{ background: projConfig.color + "18", color: projConfig.color }}
+            >
               {projConfig.icon} {ticket.project}
             </span>
-            {ticket.priority === "High" && <span className="ticket__high">HIGH</span>}
-            <span className="ticket__energy">
-              {ENERGY_ICONS[ticket.energy]} {ticket.energy}
+            <span className="ticket-row__energy">
+              {"\u{1F9E0}" === projConfig.icon ? "" : ""}{ticket.energy}
             </span>
+            {ticket.note && (
+              <span className="ticket-row__note">{"\u2014"} {ticket.note}</span>
+            )}
           </div>
-          <div className="ticket__task">{ticket.task}</div>
         </div>
-
-        <div className="ticket__actions" onClick={(e) => e.stopPropagation()}>
-          <select
-            className="ticket__status-select"
-            value={ticket.status}
-            onChange={(e) => updateStatus(ticket.id, e.target.value)}
-            style={{ background: statusStyle.bg, color: statusStyle.text }}
-          >
-            {STATUSES.map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-        </div>
+        {ticket.priority === "High" && <span className="ticket-row__high">HIGH</span>}
       </div>
 
       {expanded && (
-        <div className="ticket__details">
+        <div className="ticket-row__details">
+          <div className="ticket-row__detail-row">
+            <span className="ticket-row__detail-label">Status</span>
+            <select
+              className="ticket-row__status-select"
+              value={ticket.status}
+              onChange={(e) => updateStatus(ticket.id, e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
           {depNames.length > 0 && (
-            <div className="ticket__depends">
-              {"⛓️"} Depends on: {depNames.join(", ")}
+            <div className="ticket-row__depends">
+              Depends on: {depNames.join(", ")}
             </div>
           )}
           {ticket.blocker_note && (
-            <div className="ticket__blocker">{"🚫"} {ticket.blocker_note}</div>
+            <div className="ticket-row__blocker">{ticket.blocker_note}</div>
           )}
           {ticket.note && (
-            <div className="ticket__note">{"📝"} {ticket.note}</div>
+            <div className="ticket-row__note-detail">{ticket.note}</div>
           )}
           {ticket.date_opened && (
-            <div className="ticket__date">
-              Opened: {ticket.date_opened}
-              {ticket.date_closed ? ` · Closed: ${ticket.date_closed}` : ""}
+            <div className="ticket-row__date">
+              Opened {ticket.date_opened}
+              {ticket.date_closed ? ` \u00B7 Closed ${ticket.date_closed}` : ""}
             </div>
           )}
         </div>
       )}
-    </div>
+    </>
   );
 }
