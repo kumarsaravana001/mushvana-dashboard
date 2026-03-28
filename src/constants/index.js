@@ -29,3 +29,7 @@ export const ENERGY_ICONS = {
 };
 
 export const STATUSES = ["Actionable", "Waiting", "Blocked", "Done"];
+
+export const ENERGIES = ["Deep Cognitive", "Execution/Physical", "Shallow/Ops", "Exploratory", "Any"];
+
+export const PRIORITIES = ["High", "Medium", "Low"];

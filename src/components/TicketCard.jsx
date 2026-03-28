@@ -4,9 +4,16 @@ import { useTickets } from "../context/TicketContext";
 
 export default function TicketCard({ ticket }) {
   const [expanded, setExpanded] = useState(false);
-  const { updateStatus } = useTickets();
+  const { tickets, updateStatus } = useTickets();
   const projConfig = PROJECTS[ticket.project];
   const statusStyle = STATUS_CONFIG[ticket.status];
+
+  const depNames = (ticket.depends_on || [])
+    .map((id) => {
+      const dep = tickets.find((t) => t.id === id);
+      return dep ? dep.task : id;
+    })
+    .filter(Boolean);
 
   return (
     <div
@@ -44,11 +51,22 @@ export default function TicketCard({ ticket }) {
 
       {expanded && (
         <div className="ticket__details">
-          {ticket.depends && (
-            <div className="ticket__depends">{"⛓️"} Depends on: {ticket.depends}</div>
+          {depNames.length > 0 && (
+            <div className="ticket__depends">
+              {"⛓️"} Depends on: {depNames.join(", ")}
+            </div>
+          )}
+          {ticket.blocker_note && (
+            <div className="ticket__blocker">{"🚫"} {ticket.blocker_note}</div>
           )}
           {ticket.note && (
             <div className="ticket__note">{"📝"} {ticket.note}</div>
+          )}
+          {ticket.date_opened && (
+            <div className="ticket__date">
+              Opened: {ticket.date_opened}
+              {ticket.date_closed ? ` · Closed: ${ticket.date_closed}` : ""}
+            </div>
           )}
         </div>
       )}

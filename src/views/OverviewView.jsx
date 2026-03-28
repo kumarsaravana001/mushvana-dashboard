@@ -4,7 +4,7 @@ import { useTicketStats } from "../hooks/useTicketStats";
 import StatsGrid from "../components/StatsGrid";
 import ProjectCard from "../components/ProjectCard";
 
-export default function OverviewView() {
+export default function OverviewView({ onProjectClick }) {
   const { tickets } = useTickets();
   const globalStats = useTicketStats(tickets, "All");
 
@@ -12,7 +12,7 @@ export default function OverviewView() {
     <div>
       <StatsGrid stats={globalStats} />
       {Object.entries(PROJECTS).map(([name, config]) => (
-        <ProjectCard key={name} name={name} config={config} />
+        <ProjectCard key={name} name={name} config={config} onClick={onProjectClick} />
       ))}
     </div>
   );

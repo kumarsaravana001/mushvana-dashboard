@@ -3,9 +3,9 @@ import { useTicketFilters } from "../hooks/useTicketFilters";
 import FilterBar from "../components/FilterBar";
 import TicketCard from "../components/TicketCard";
 
-export default function AllTicketsView() {
+export default function AllTicketsView({ initialProject }) {
   const { tickets } = useTickets();
-  const filters = useTicketFilters(tickets);
+  const filters = useTicketFilters(tickets, initialProject);
 
   return (
     <div>

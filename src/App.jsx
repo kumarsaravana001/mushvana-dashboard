@@ -1,18 +1,28 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { TicketProvider, useTickets } from "./context/TicketContext";
 import Header from "./components/Header";
 import TabBar from "./components/TabBar";
+import SuggestionBanner from "./components/SuggestionBanner";
 import OverviewView from "./views/OverviewView";
 import ActionableView from "./views/ActionableView";
 import AllTicketsView from "./views/AllTicketsView";
+import DependencyView from "./views/DependencyView";
+import ManageView from "./views/ManageView";
 
 function Dashboard() {
   const [view, setView] = useState("overview");
+  const [initialProject, setInitialProject] = useState("All");
   const { tickets, loaded } = useTickets();
+
   const actionableCount = useMemo(
     () => tickets.filter((t) => t.status === "Actionable").length,
     [tickets]
   );
+
+  const handleProjectClick = useCallback((projectName) => {
+    setInitialProject(projectName);
+    setView("all");
+  }, []);
 
   if (!loaded) return <div className="loading">Loading...</div>;
 
@@ -21,10 +31,13 @@ function Dashboard() {
       <div className="container">
         <Header />
         <TabBar active={view} onChange={setView} actionableCount={actionableCount} />
+        <SuggestionBanner />
 
-        {view === "overview" && <OverviewView />}
+        {view === "overview" && <OverviewView onProjectClick={handleProjectClick} />}
         {view === "actionable" && <ActionableView />}
-        {view === "all" && <AllTicketsView />}
+        {view === "all" && <AllTicketsView key={initialProject} initialProject={initialProject} />}
+        {view === "dependencies" && <DependencyView />}
+        {view === "manage" && <ManageView />}
 
         <footer className="footer">
           Update statuses as you complete work

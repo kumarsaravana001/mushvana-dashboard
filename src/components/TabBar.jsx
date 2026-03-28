@@ -2,6 +2,8 @@ const TABS = [
   { key: "overview", label: "Overview" },
   { key: "actionable", label: "Do Now" },
   { key: "all", label: "All Tickets" },
+  { key: "dependencies", label: "Deps" },
+  { key: "manage", label: "Manage" },
 ];
 
 export default function TabBar({ active, onChange, actionableCount }) {

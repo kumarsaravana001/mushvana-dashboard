@@ -15,13 +15,17 @@ const STAT_LABELS = [
   { key: "done", label: "Done", color: "#6b7280" },
 ];
 
-export default function ProjectCard({ name, config }) {
+export default function ProjectCard({ name, config, onClick }) {
   const { tickets } = useTickets();
   const stats = useTicketStats(tickets, name);
   const pct = stats.total > 0 ? Math.round((stats.done / stats.total) * 100) : 0;
 
   return (
-    <div className="project-card" style={{ borderLeftColor: config.color }}>
+    <div
+      className="project-card"
+      style={{ borderLeftColor: config.color, cursor: onClick ? "pointer" : "default" }}
+      onClick={() => onClick?.(name)}
+    >
       <div className="project-card__header">
         <div className="project-card__info">
           <span className="project-card__icon">{config.icon}</span>
