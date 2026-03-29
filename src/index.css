@@ -158,6 +158,34 @@ body {
 }
 .ticket-row__inline-status:hover { background: var(--bg-hover); border-color: var(--border-input); }
 
+/* ── Timer ── */
+.ticket-row__timer-btn {
+  width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border-input);
+  background: transparent; color: var(--text-secondary); font-size: 12px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; align-self: center; -webkit-tap-highlight-color: transparent;
+}
+.ticket-row__timer-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+.ticket-row__timer-btn--active {
+  background: rgba(239,68,68,0.1); border-color: #ef4444; color: #ef4444;
+}
+.ticket-row__timer-badge {
+  font-size: 11px; font-weight: 600; color: var(--accent);
+  margin-left: 8px; white-space: nowrap;
+}
+.ticket-row__time { font-size: 11px; color: var(--accent); font-weight: 500; white-space: nowrap; }
+.ticket-row__time-detail { font-size: 12px; color: var(--accent); margin-bottom: 6px; font-weight: 500; }
+
+/* ── Stale Badges ── */
+.ticket-row__stale {
+  font-size: 11px; font-weight: 500; white-space: nowrap;
+  padding: 1px 6px; border-radius: 4px;
+}
+.ticket-row__stale--yellow { color: #eab308; background: rgba(234,179,8,0.1); }
+.ticket-row__stale--red { color: #ef4444; background: rgba(239,68,68,0.1); }
+.stat-card--stale { background: rgba(234,179,8,0.06); }
+.stat-card__value--stale { color: #eab308 !important; }
+
 /* ── Ticket Expanded Detail ── */
 .ticket-row__details {
   padding: 8px 0 8px 20px; border-bottom: 1px solid var(--border-sep);
@@ -392,6 +420,40 @@ body {
 .dep-legend__item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-secondary); }
 .dep-legend__dot { width: 8px; height: 8px; border-radius: 50%; }
 .dep-legend__hint { font-size: 10px; color: var(--text-tertiary); font-style: italic; }
+
+/* ── Reroute Sheet ── */
+.reroute-overlay {
+  position: fixed; inset: 0; background: var(--overlay);
+  z-index: 150; display: flex; align-items: flex-end; justify-content: center;
+}
+.reroute-sheet {
+  background: var(--bg-card); border-radius: 12px 12px 0 0; width: 100%;
+  max-width: 500px; padding: 20px; animation: slideUp 0.15s ease-out;
+  border: 1px solid var(--border-sep);
+}
+.reroute-sheet__header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+.reroute-sheet__title { font-size: 14px; color: var(--text-primary); line-height: 1.4; }
+.reroute-sheet__title strong { font-weight: 600; }
+.reroute-sheet__close {
+  width: 28px; height: 28px; border-radius: 6px; border: none;
+  background: transparent; color: var(--text-secondary); font-size: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.reroute-sheet__close:hover { background: var(--bg-hover); }
+.reroute-sheet__subtitle { font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; }
+.reroute-sheet__list { display: flex; flex-direction: column; gap: 6px; }
+.reroute-sheet__item {
+  display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+  background: var(--bg-surface); border-radius: 8px; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.reroute-sheet__item:hover { background: var(--bg-hover); }
+.reroute-sheet__pill {
+  font-size: 11px; font-weight: 500; padding: 1px 8px;
+  border-radius: 4px; white-space: nowrap; flex-shrink: 0;
+}
+.reroute-sheet__task { font-size: 13px; font-weight: 500; color: var(--text-primary); flex: 1; min-width: 0; }
+.reroute-sheet__energy { font-size: 11px; color: var(--text-secondary); white-space: nowrap; flex-shrink: 0; }
 
 /* ── Misc ── */
 .ticket-count { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }

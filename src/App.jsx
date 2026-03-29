@@ -4,6 +4,7 @@ import { useTheme } from "./hooks/useTheme";
 import Header from "./components/Header";
 import TabBar from "./components/TabBar";
 import SuggestionBanner from "./components/SuggestionBanner";
+import RerouteToast from "./components/RerouteToast";
 import OverviewView from "./views/OverviewView";
 import ActionableView from "./views/ActionableView";
 import AllTicketsView from "./views/AllTicketsView";
@@ -34,6 +35,7 @@ function Dashboard() {
         <Header theme={theme} onToggleTheme={toggle} />
         <TabBar active={view} onChange={setView} actionableCount={actionableCount} />
         <SuggestionBanner />
+        <RerouteToast />
 
         {view === "overview" && <OverviewView onProjectClick={handleProjectClick} />}
         {view === "actionable" && <ActionableView />}
