@@ -6,6 +6,7 @@ import TabBar from "./components/TabBar";
 import SuggestionBanner from "./components/SuggestionBanner";
 import RerouteToast from "./components/RerouteToast";
 import EnergyLogModal from "./components/EnergyLogModal";
+import LifeLogModal from "./components/LifeLogModal";
 import OverviewView from "./views/OverviewView";
 import ActionableView from "./views/ActionableView";
 import AllTicketsView from "./views/AllTicketsView";
@@ -47,6 +48,7 @@ function Dashboard() {
         {view === "manage" && <ManageView />}
 
         <EnergyLogModal />
+        <LifeLogModal />
 
         <footer className="footer">
           Update statuses as you complete work

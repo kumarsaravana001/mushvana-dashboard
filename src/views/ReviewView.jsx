@@ -29,7 +29,7 @@ function getSessionsInRange(tickets, start, end) {
 }
 
 export default function ReviewView() {
-  const { tickets } = useTickets();
+  const { tickets, lifeDomains, lifeSessions } = useTickets();
 
   const thisWeek = getWeekRange(0);
   const lastWeek = getWeekRange(1);
@@ -228,6 +228,38 @@ export default function ReviewView() {
           </div>
         </div>
       )}
+
+      {lifeDomains.length > 0 && (() => {
+        const weekStart = new Date(thisWeek.start);
+        const weekEnd = new Date(thisWeek.end);
+        const domainData = lifeDomains.map((d) => {
+          const sessions = lifeSessions.filter((s) => s.domainId === d.id && new Date(s.end) >= weekStart && new Date(s.end) < weekEnd);
+          return { ...d, count: sessions.length, totalMin: sessions.reduce((s, x) => s + x.duration_minutes, 0) };
+        }).filter((d) => d.count > 0 || d.quota_target > 0);
+        if (domainData.length === 0) return null;
+        return (
+          <div className="review__section">
+            <div className="section-header">LIFE DOMAINS</div>
+            {domainData.map((d) => (
+              <div key={d.id} className="review__bar-row">
+                <span className="review__bar-label">{d.icon} {d.name.split("/")[0]}</span>
+                <div className="review__bar-track">
+                  <div
+                    className="review__bar-fill"
+                    style={{
+                      width: d.quota_target > 0 ? `${Math.min(Math.round((d.count / d.quota_target) * 100), 100)}%` : "0%",
+                      background: d.count >= d.quota_target && d.quota_target > 0 ? "#22c55e" : "#eab308",
+                    }}
+                  />
+                </div>
+                <span className="review__bar-value">
+                  {d.count}{d.quota_target > 0 ? `/${d.quota_target}` : ""} {d.totalMin > 0 ? `(${formatMinutes(d.totalMin)})` : ""}
+                </span>
+              </div>
+            ))}
+          </div>
+        );
+      })()}
 
       {review.sessionCount === 0 && (
         <div className="empty-state">

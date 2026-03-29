@@ -5,6 +5,7 @@ import StatsGrid from "../components/StatsGrid";
 import ProjectCard from "../components/ProjectCard";
 import MissionSection from "../components/MissionSection";
 import QuotaSection from "../components/QuotaSection";
+import LifeDomainSection from "../components/LifeDomainSection";
 
 export default function OverviewView({ onProjectClick }) {
   const { tickets } = useTickets();
@@ -15,6 +16,7 @@ export default function OverviewView({ onProjectClick }) {
       <MissionSection />
       <StatsGrid stats={globalStats} />
       <QuotaSection />
+      <LifeDomainSection />
       {Object.entries(PROJECTS).map(([name, config]) => (
         <ProjectCard key={name} name={name} config={config} onClick={onProjectClick} />
       ))}

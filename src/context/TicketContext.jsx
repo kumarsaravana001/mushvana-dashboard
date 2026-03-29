@@ -6,6 +6,17 @@ const STORAGE_KEY = "mushvana-tickets";
 const TIMER_KEY = "mushvana-timer";
 const MISSIONS_KEY = "mushvana-missions";
 const QUOTAS_KEY = "mushvana-quotas";
+const LIFE_DOMAINS_KEY = "mushvana-life-domains";
+const LIFE_SESSIONS_KEY = "mushvana-life-sessions";
+const LIFE_TIMER_KEY = "mushvana-life-timer";
+
+const DEFAULT_LIFE_DOMAINS = [
+  { id: "health", name: "Health/Gym", icon: "\uD83D\uDCAA", quota_target: 7, quota_period: "week" },
+  { id: "meditation", name: "Meditation/Sadhana", icon: "\uD83E\uDDD8", quota_target: 7, quota_period: "week" },
+  { id: "rest", name: "Rest/Recovery", icon: "\uD83D\uDE34", quota_target: 0, quota_period: "week" },
+  { id: "learning", name: "Learning", icon: "\uD83D\uDCDA", quota_target: 0, quota_period: "week" },
+  { id: "relationships", name: "Relationships", icon: "\u2764\uFE0F", quota_target: 0, quota_period: "week" },
+];
 
 const TicketContext = createContext(null);
 
@@ -36,6 +47,11 @@ export function TicketProvider({ children }) {
   const [pendingLog, setPendingLog] = useState(null);
   const [missions, setMissions] = useState([]);
   const [quotas, setQuotas] = useState({});
+  const [lifeDomains, setLifeDomains] = useState(DEFAULT_LIFE_DOMAINS);
+  const [lifeSessions, setLifeSessions] = useState([]);
+  const [lifeTimer, setLifeTimer] = useState(() => {
+    try { const s = localStorage.getItem(LIFE_TIMER_KEY); return s ? JSON.parse(s) : null; } catch { return null; }
+  });
 
   useEffect(() => {
     try {
@@ -60,6 +76,14 @@ export function TicketProvider({ children }) {
     try {
       const saved = localStorage.getItem(QUOTAS_KEY);
       if (saved) setQuotas(JSON.parse(saved));
+    } catch {}
+    try {
+      const saved = localStorage.getItem(LIFE_DOMAINS_KEY);
+      if (saved) setLifeDomains(JSON.parse(saved));
+    } catch {}
+    try {
+      const saved = localStorage.getItem(LIFE_SESSIONS_KEY);
+      if (saved) setLifeSessions(JSON.parse(saved));
     } catch {}
   }, []);
 
@@ -292,21 +316,114 @@ export function TicketProvider({ children }) {
     });
   }, []);
 
+  const updateLifeDomain = useCallback((id, updates) => {
+    setLifeDomains((prev) => {
+      const next = prev.map((d) => d.id === id ? { ...d, ...updates } : d);
+      localStorage.setItem(LIFE_DOMAINS_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const addLifeDomain = useCallback((domain) => {
+    setLifeDomains((prev) => {
+      const next = [...prev, { ...domain, id: crypto.randomUUID(), quota_target: 0, quota_period: "week" }];
+      localStorage.setItem(LIFE_DOMAINS_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const deleteLifeDomain = useCallback((id) => {
+    setLifeDomains((prev) => {
+      const next = prev.filter((d) => d.id !== id);
+      localStorage.setItem(LIFE_DOMAINS_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const startLifeTimer = useCallback((domainId) => {
+    setLifeTimer((prev) => {
+      if (prev && prev.domainId !== domainId) {
+        const now = new Date().toISOString();
+        const duration = Math.floor((Date.now() - new Date(prev.start).getTime()) / 60000);
+        const session = { domainId: prev.domainId, start: prev.start, end: now, duration_minutes: Math.max(duration, 1) };
+        setLifeSessions((s) => {
+          const next = [...s, session];
+          localStorage.setItem(LIFE_SESSIONS_KEY, JSON.stringify(next));
+          return next;
+        });
+      }
+      const timer = { domainId, start: new Date().toISOString() };
+      localStorage.setItem(LIFE_TIMER_KEY, JSON.stringify(timer));
+      return timer;
+    });
+  }, []);
+
+  const stopLifeTimer = useCallback(() => {
+    setLifeTimer((prev) => {
+      if (!prev) return null;
+      const now = new Date().toISOString();
+      const duration = Math.floor((Date.now() - new Date(prev.start).getTime()) / 60000);
+      const session = { domainId: prev.domainId, start: prev.start, end: now, duration_minutes: Math.max(duration, 1) };
+      setLifeSessions((s) => {
+        const next = [...s, session];
+        localStorage.setItem(LIFE_SESSIONS_KEY, JSON.stringify(next));
+        return next;
+      });
+      setPendingLifeLog({ domainId: prev.domainId, sessionEnd: now });
+      localStorage.removeItem(LIFE_TIMER_KEY);
+      return null;
+    });
+  }, []);
+
+  const [pendingLifeLog, setPendingLifeLog] = useState(null);
+
+  const logLifeSessionFeel = useCallback((sessionEnd, energyUsed, afterFeel) => {
+    setLifeSessions((prev) => {
+      const next = prev.map((s) =>
+        s.end === sessionEnd ? { ...s, energy_used: energyUsed, after_feel: afterFeel } : s
+      );
+      localStorage.setItem(LIFE_SESSIONS_KEY, JSON.stringify(next));
+      return next;
+    });
+    setPendingLifeLog(null);
+  }, []);
+
+  const dismissLifeLog = useCallback(() => setPendingLifeLog(null), []);
+
+  const restBehind = useMemo(() => {
+    const restDomain = lifeDomains.find((d) => d.id === "rest" || d.name.toLowerCase().includes("rest"));
+    if (!restDomain || !restDomain.quota_target) return false;
+    const now = new Date();
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - now.getDay());
+    weekStart.setHours(0, 0, 0, 0);
+    const count = lifeSessions.filter((s) => s.domainId === restDomain.id && new Date(s.end) >= weekStart).length;
+    const dayOfWeek = now.getDay() || 7;
+    const expected = Math.round((restDomain.quota_target / 7) * dayOfWeek);
+    return count < expected * 0.5;
+  }, [lifeDomains, lifeSessions]);
+
   const value = useMemo(() => ({
     tickets, loaded, suggestions, rerouteSuggestions, activeTimer,
     pendingLog, missions, quotas,
+    lifeDomains, lifeSessions, lifeTimer, pendingLifeLog, restBehind,
     updateStatus, addTicket, updateTicket, deleteTicket,
     bulkUpdateStatus, setAllTickets, dismissSuggestions,
     dismissSuggestion, acceptSuggestion, dismissReroute,
     startTimer, stopTimer, logSessionFeel, dismissLog,
     addMission, updateMission, deleteMission, setQuota,
+    updateLifeDomain, addLifeDomain, deleteLifeDomain,
+    startLifeTimer, stopLifeTimer, logLifeSessionFeel, dismissLifeLog,
   }), [tickets, loaded, suggestions, rerouteSuggestions, activeTimer,
     pendingLog, missions, quotas,
+    lifeDomains, lifeSessions, lifeTimer, pendingLifeLog, restBehind,
     updateStatus, addTicket, updateTicket, deleteTicket,
     bulkUpdateStatus, setAllTickets, dismissSuggestions,
     dismissSuggestion, acceptSuggestion, dismissReroute,
     startTimer, stopTimer, logSessionFeel, dismissLog,
-    addMission, updateMission, deleteMission, setQuota]);
+    addMission, updateMission, deleteMission, setQuota,
+    updateLifeDomain, addLifeDomain, deleteLifeDomain,
+    startLifeTimer, stopLifeTimer, logLifeSessionFeel, dismissLifeLog]);
 
   return <TicketContext.Provider value={value}>{children}</TicketContext.Provider>;
 }
