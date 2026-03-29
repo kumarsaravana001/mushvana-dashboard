@@ -4,6 +4,8 @@ import { needsMigration, migrateTickets } from "../utils/migrate";
 
 const STORAGE_KEY = "mushvana-tickets";
 const TIMER_KEY = "mushvana-timer";
+const MISSIONS_KEY = "mushvana-missions";
+const QUOTAS_KEY = "mushvana-quotas";
 
 const TicketContext = createContext(null);
 
@@ -31,6 +33,9 @@ export function TicketProvider({ children }) {
   const [suggestions, setSuggestions] = useState([]);
   const [rerouteSuggestions, setRerouteSuggestions] = useState([]);
   const [activeTimer, setActiveTimer] = useState(loadTimer);
+  const [pendingLog, setPendingLog] = useState(null);
+  const [missions, setMissions] = useState([]);
+  const [quotas, setQuotas] = useState({});
 
   useEffect(() => {
     try {
@@ -45,6 +50,17 @@ export function TicketProvider({ children }) {
       }
     } catch {}
     setLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(MISSIONS_KEY);
+      if (saved) setMissions(JSON.parse(saved));
+    } catch {}
+    try {
+      const saved = localStorage.getItem(QUOTAS_KEY);
+      if (saved) setQuotas(JSON.parse(saved));
+    } catch {}
   }, []);
 
   const checkUnblocked = useCallback((next, changedId) => {
@@ -132,15 +148,17 @@ export function TicketProvider({ children }) {
       if (!prev) return null;
       const now = new Date().toISOString();
       const duration = Math.floor((Date.now() - new Date(prev.start).getTime()) / 60000);
+      const session = { start: prev.start, end: now, duration_minutes: Math.max(duration, 1) };
       setTickets((curTickets) => {
         const next = curTickets.map((t) => {
           if (t.id !== prev.ticketId) return t;
-          const sessions = [...(t.time_sessions || []), { start: prev.start, end: now, duration_minutes: Math.max(duration, 1) }];
+          const sessions = [...(t.time_sessions || []), session];
           return { ...t, time_sessions: sessions, updated_at: now };
         });
         persist(next);
         return next;
       });
+      setPendingLog({ ticketId: prev.ticketId, sessionEnd: now });
       persistTimer(null);
       return null;
     });
@@ -225,17 +243,70 @@ export function TicketProvider({ children }) {
   }, [updateStatus]);
   const dismissReroute = useCallback(() => setRerouteSuggestions([]), []);
 
+  const logSessionFeel = useCallback((ticketId, sessionEnd, energyUsed, afterFeel) => {
+    setTickets((prev) => {
+      const next = prev.map((t) => {
+        if (t.id !== ticketId) return t;
+        const sessions = (t.time_sessions || []).map((s) =>
+          s.end === sessionEnd ? { ...s, energy_used: energyUsed, after_feel: afterFeel } : s
+        );
+        return { ...t, time_sessions: sessions };
+      });
+      persist(next);
+      return next;
+    });
+    setPendingLog(null);
+  }, []);
+
+  const dismissLog = useCallback(() => setPendingLog(null), []);
+
+  const addMission = useCallback((mission) => {
+    setMissions((prev) => {
+      const next = [...prev, { ...mission, id: crypto.randomUUID(), status: "active", created_at: new Date().toISOString() }];
+      localStorage.setItem(MISSIONS_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const updateMission = useCallback((id, updates) => {
+    setMissions((prev) => {
+      const next = prev.map((m) => m.id === id ? { ...m, ...updates } : m);
+      localStorage.setItem(MISSIONS_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const deleteMission = useCallback((id) => {
+    setMissions((prev) => {
+      const next = prev.filter((m) => m.id !== id);
+      localStorage.setItem(MISSIONS_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const setQuota = useCallback((project, quota) => {
+    setQuotas((prev) => {
+      const next = { ...prev, [project]: quota };
+      localStorage.setItem(QUOTAS_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
   const value = useMemo(() => ({
     tickets, loaded, suggestions, rerouteSuggestions, activeTimer,
+    pendingLog, missions, quotas,
     updateStatus, addTicket, updateTicket, deleteTicket,
     bulkUpdateStatus, setAllTickets, dismissSuggestions,
     dismissSuggestion, acceptSuggestion, dismissReroute,
-    startTimer, stopTimer,
+    startTimer, stopTimer, logSessionFeel, dismissLog,
+    addMission, updateMission, deleteMission, setQuota,
   }), [tickets, loaded, suggestions, rerouteSuggestions, activeTimer,
+    pendingLog, missions, quotas,
     updateStatus, addTicket, updateTicket, deleteTicket,
     bulkUpdateStatus, setAllTickets, dismissSuggestions,
     dismissSuggestion, acceptSuggestion, dismissReroute,
-    startTimer, stopTimer]);
+    startTimer, stopTimer, logSessionFeel, dismissLog,
+    addMission, updateMission, deleteMission, setQuota]);
 
   return <TicketContext.Provider value={value}>{children}</TicketContext.Provider>;
 }

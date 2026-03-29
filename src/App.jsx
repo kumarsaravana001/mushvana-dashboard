@@ -5,10 +5,12 @@ import Header from "./components/Header";
 import TabBar from "./components/TabBar";
 import SuggestionBanner from "./components/SuggestionBanner";
 import RerouteToast from "./components/RerouteToast";
+import EnergyLogModal from "./components/EnergyLogModal";
 import OverviewView from "./views/OverviewView";
 import ActionableView from "./views/ActionableView";
 import AllTicketsView from "./views/AllTicketsView";
 import DependencyView from "./views/DependencyView";
+import ReviewView from "./views/ReviewView";
 import ManageView from "./views/ManageView";
 
 function Dashboard() {
@@ -41,7 +43,10 @@ function Dashboard() {
         {view === "actionable" && <ActionableView />}
         {view === "all" && <AllTicketsView key={initialProject} initialProject={initialProject} />}
         {view === "dependencies" && <DependencyView />}
+        {view === "review" && <ReviewView />}
         {view === "manage" && <ManageView />}
+
+        <EnergyLogModal />
 
         <footer className="footer">
           Update statuses as you complete work

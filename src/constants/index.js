@@ -33,3 +33,10 @@ export const STATUSES = ["Actionable", "Waiting", "Blocked", "Done"];
 export const ENERGIES = ["Deep Cognitive", "Execution/Physical", "Shallow/Ops", "Exploratory", "Any"];
 
 export const PRIORITIES = ["High", "Medium", "Low"];
+
+export const AFTER_FEELS = [
+  { key: "clear", label: "Clear", icon: "\u2728" },
+  { key: "tired", label: "Tired", icon: "\uD83D\uDE10" },
+  { key: "energized", label: "Energized", icon: "\u26A1" },
+  { key: "scattered", label: "Scattered", icon: "\uD83C\uDF00" },
+];
