@@ -12,6 +12,7 @@ import ActionableView from "./views/ActionableView";
 import AllTicketsView from "./views/AllTicketsView";
 import DependencyView from "./views/DependencyView";
 import ReviewView from "./views/ReviewView";
+import TimelineView from "./views/TimelineView";
 import ManageView from "./views/ManageView";
 
 function Dashboard() {
@@ -44,6 +45,7 @@ function Dashboard() {
         {view === "actionable" && <ActionableView />}
         {view === "all" && <AllTicketsView key={initialProject} initialProject={initialProject} />}
         {view === "dependencies" && <DependencyView />}
+        {view === "timeline" && <TimelineView />}
         {view === "review" && <ReviewView />}
         {view === "manage" && <ManageView />}
 

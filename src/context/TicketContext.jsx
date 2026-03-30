@@ -9,6 +9,7 @@ const QUOTAS_KEY = "mushvana-quotas";
 const LIFE_DOMAINS_KEY = "mushvana-life-domains";
 const LIFE_SESSIONS_KEY = "mushvana-life-sessions";
 const LIFE_TIMER_KEY = "mushvana-life-timer";
+const MILESTONES_KEY = "mushvana-milestones";
 
 const DEFAULT_LIFE_DOMAINS = [
   { id: "health", name: "Health/Gym", icon: "\uD83D\uDCAA", quota_target: 7, quota_period: "week" },
@@ -49,6 +50,7 @@ export function TicketProvider({ children }) {
   const [quotas, setQuotas] = useState({});
   const [lifeDomains, setLifeDomains] = useState(DEFAULT_LIFE_DOMAINS);
   const [lifeSessions, setLifeSessions] = useState([]);
+  const [milestones, setMilestones] = useState([]);
   const [lifeTimer, setLifeTimer] = useState(() => {
     try { const s = localStorage.getItem(LIFE_TIMER_KEY); return s ? JSON.parse(s) : null; } catch { return null; }
   });
@@ -84,6 +86,10 @@ export function TicketProvider({ children }) {
     try {
       const saved = localStorage.getItem(LIFE_SESSIONS_KEY);
       if (saved) setLifeSessions(JSON.parse(saved));
+    } catch {}
+    try {
+      const saved = localStorage.getItem(MILESTONES_KEY);
+      if (saved) setMilestones(JSON.parse(saved));
     } catch {}
   }, []);
 
@@ -340,6 +346,30 @@ export function TicketProvider({ children }) {
     });
   }, []);
 
+  const addMilestone = useCallback((ms) => {
+    setMilestones((prev) => {
+      const next = [...prev, { ...ms, id: crypto.randomUUID() }];
+      localStorage.setItem(MILESTONES_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const updateMilestone = useCallback((id, updates) => {
+    setMilestones((prev) => {
+      const next = prev.map((m) => m.id === id ? { ...m, ...updates } : m);
+      localStorage.setItem(MILESTONES_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const deleteMilestone = useCallback((id) => {
+    setMilestones((prev) => {
+      const next = prev.filter((m) => m.id !== id);
+      localStorage.setItem(MILESTONES_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
   const startLifeTimer = useCallback((domainId) => {
     setLifeTimer((prev) => {
       if (prev && prev.domainId !== domainId) {
@@ -405,23 +435,25 @@ export function TicketProvider({ children }) {
 
   const value = useMemo(() => ({
     tickets, loaded, suggestions, rerouteSuggestions, activeTimer,
-    pendingLog, missions, quotas,
+    pendingLog, missions, quotas, milestones,
     lifeDomains, lifeSessions, lifeTimer, pendingLifeLog, restBehind,
     updateStatus, addTicket, updateTicket, deleteTicket,
     bulkUpdateStatus, setAllTickets, dismissSuggestions,
     dismissSuggestion, acceptSuggestion, dismissReroute,
     startTimer, stopTimer, logSessionFeel, dismissLog,
     addMission, updateMission, deleteMission, setQuota,
+    addMilestone, updateMilestone, deleteMilestone,
     updateLifeDomain, addLifeDomain, deleteLifeDomain,
     startLifeTimer, stopLifeTimer, logLifeSessionFeel, dismissLifeLog,
   }), [tickets, loaded, suggestions, rerouteSuggestions, activeTimer,
-    pendingLog, missions, quotas,
+    pendingLog, missions, quotas, milestones,
     lifeDomains, lifeSessions, lifeTimer, pendingLifeLog, restBehind,
     updateStatus, addTicket, updateTicket, deleteTicket,
     bulkUpdateStatus, setAllTickets, dismissSuggestions,
     dismissSuggestion, acceptSuggestion, dismissReroute,
     startTimer, stopTimer, logSessionFeel, dismissLog,
     addMission, updateMission, deleteMission, setQuota,
+    addMilestone, updateMilestone, deleteMilestone,
     updateLifeDomain, addLifeDomain, deleteLifeDomain,
     startLifeTimer, stopLifeTimer, logLifeSessionFeel, dismissLifeLog]);
 

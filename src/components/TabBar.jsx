@@ -3,6 +3,7 @@ const TABS = [
   { key: "actionable", label: "Do Now" },
   { key: "all", label: "All Tickets" },
   { key: "dependencies", label: "Deps" },
+  { key: "timeline", label: "Timeline" },
   { key: "review", label: "Review" },
   { key: "manage", label: "Manage" },
 ];
